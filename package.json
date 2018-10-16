@@ -4,7 +4,7 @@
   "description": "This is a workshop about Protractor",
   "main": "index.js",
   "scripts": {
-    "clean": "rm -rf dist",
+    "clean": "rd /s /q dist",
     "build": "npm run clean && tsc",
     "test": "npm run build && protractor dist/protractor/config.js"
   },
@@ -24,11 +24,10 @@
     "url": "https://github.com/cfagudelo96/protractor-workshop-2018/issues"
   },
   "homepage": "https://github.com/cfagudelo96/protractor-workshop-2018#readme",
-  "dependencies": {
-    "protractor": "^5.4.1"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@types/jasminewd2": "^2.0.5",
+    "protractor": "^5.4.1",
     "typescript": "^3.1.3"
   }
 }
