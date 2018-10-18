@@ -12,7 +12,7 @@ export class ProductListPage {
       by.css(`li:nth-child(${index + 1}) > div.product-container`)
     );
     await browser.actions().mouseMove(productElement).perform();
-    productElement.element(
+    await productElement.element(
       by.css('a.button.ajax_add_to_cart_button.btn.btn-default')
     ).click();
   }

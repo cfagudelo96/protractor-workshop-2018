@@ -10,10 +10,10 @@ export class PaymentStepPage {
   }
 
   public async selectPaymentByBankWire(): Promise<void> {
-    this.payByBankWireOption.click();
+    await this.payByBankWireOption.click();
   }
 
   public async confirmOrder(): Promise<void> {
-    this.confirmOrderButton.click();
+    await this.confirmOrderButton.click();
   }
 }

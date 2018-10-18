@@ -10,10 +10,10 @@ export class ShippingStepPage {
   }
 
   public async agreeToTermsOfService(): Promise<void> {
-    this.termsOfServiceCheckbox.click();
+    await this.termsOfServiceCheckbox.click();
   }
 
   public async proceedToCheckout(): Promise<void> {
-    this.proceedToCheckoutButton.click();
+    await this.proceedToCheckoutButton.click();
   }
 }
