@@ -6,7 +6,7 @@ export class ShippingStepPage {
 
   constructor() {
     this.termsOfServiceCheckbox = $('#cgv');
-    this.proceedToCheckoutButton = $('#form > p > button > span');
+    this.proceedToCheckoutButton = $('.cart_navigation button[type="submit"]');
   }
 
   public async agreeToTermsOfService(): Promise<void> {

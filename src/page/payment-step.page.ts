@@ -5,8 +5,8 @@ export class PaymentStepPage {
   private confirmOrderButton: ElementFinder;
 
   constructor() {
-    this.payByBankWireOption = $('#HOOK_PAYMENT > div:nth-child(1) > div > p > a');
-    this.confirmOrderButton = $('#cart_navigation > button > span');
+    this.payByBankWireOption = $('#HOOK_PAYMENT a.bankwire');
+    this.confirmOrderButton = $('#cart_navigation > button[type="submit"]');
   }
 
   public async selectPaymentByBankWire(): Promise<void> {

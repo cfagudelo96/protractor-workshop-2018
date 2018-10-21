@@ -13,7 +13,7 @@ export class ProductListPage {
     );
     await browser.actions().mouseMove(productElement).perform();
     await productElement.element(
-      by.css('a.button.ajax_add_to_cart_button.btn.btn-default')
+      by.css('a.button.ajax_add_to_cart_button')
     ).click();
   }
 }
