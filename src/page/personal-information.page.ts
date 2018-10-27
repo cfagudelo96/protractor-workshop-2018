@@ -1,108 +1,106 @@
-import { browser, ElementFinder, ElementArrayFinder, element, by } from 'protractor';
+import { browser, element, by, ElementFinder } from 'protractor';
+import { resolve } from 'path';
+import { existsSync } from 'fs';
+import * as remote from 'selenium-webdriver/remote';
 
 interface PersonalInformation {
   firstName: string;
   lastName: string;
   sex: string;
   experience: number;
-  professions: string[];
+  profession: string[];
   tools: string[];
   continent: string;
   commands: string[];
+  file?: string;
+  downloadFile?: boolean;
 }
 
 export class PersonalInformationPage {
-  firstNameInput: ElementFinder;
-
-  lastNameInput: ElementFinder;
-
-  sexRadioInputs: ElementArrayFinder;
-
-  experienceRadioInputs: ElementArrayFinder;
-
-  professionCheckboxInputs: ElementArrayFinder;
-
-  toolsCheckboxInputs: ElementArrayFinder;
-
-  continentDropdownInput: ElementFinder;
-
-  commandsListInput: ElementFinder;
-
-  submitButton: ElementFinder;
+  private firstNameField: ElementFinder;
+  private lastNameField: ElementFinder;
+  private sendButton: ElementFinder;
+  private pageTitleLabel: ElementFinder;
+  private uploadFileInput: ElementFinder;
 
   constructor() {
-    this.firstNameInput = element(by.name('firstname'));
-    this.lastNameInput = element(by.name('lastname'));
-    this.sexRadioInputs = element.all(by.name('sex'));
-    this.experienceRadioInputs = element.all(by.name('exp'));
-    this.professionCheckboxInputs = element.all(by.name('profession'));
-    this.toolsCheckboxInputs = element.all(by.name('tool'));
-    this.continentDropdownInput = element(by.name('continents'));
-    this.commandsListInput = element(by.name('selenium_commands'));
-    this.submitButton = element(by.id('submit'));
+    this.firstNameField = element(by.name('firstname'));
+    this.lastNameField = element(by.name('lastname'));
+    this.sendButton = element(by.id('submit'));
+    this.pageTitleLabel = element(by.id('content')).element(by.tagName('h1'));
+    this.uploadFileInput = element(by.id('photo'));
   }
 
-  public async goToWebsite(): Promise<void> {
-    await browser.get('http://toolsqa.com/automation-practice-form/');
+  private sexOption(name: string): ElementFinder {
+    return element(by.css(`[name="sex"][value="${name}"]`));
   }
 
-  public async fillForm(personalInformation: PersonalInformation): Promise<void> {
-    await this.fillFirstName(personalInformation.firstName);
-    await this.fillLastName(personalInformation.lastName);
-    await this.pickSex(personalInformation.sex);
-    await this.pickExperience(personalInformation.experience);
-    await this.checkProfessions(personalInformation.professions);
-    await this.checkTools(personalInformation.tools);
-    await this.pickContinent(personalInformation.continent);
-    await this.pickCommands(personalInformation.commands);
-    await this.submitPersonalInformation();
+  private experienceOption(years: number): ElementFinder {
+    return element(by.css(`[name="exp"][value="${years}"]`));
   }
 
-  private async fillFirstName(firstName: string): Promise<void> {
-    await this.firstNameInput.sendKeys(firstName);
+  private professionOption(name: string): ElementFinder {
+    return element(by.css(`[name="profession"][value="${name}"]`));
   }
 
-  private async fillLastName(lastName: string): Promise<void> {
-    await this.lastNameInput.sendKeys(lastName);
+  private toolsOption(name: string): ElementFinder {
+    return element(by.css(`[name="tool"][value="${name}"]`));
   }
 
-  private async pickSex(sex: string): Promise<void> {
-    await this.sexRadioInputs.filter(element =>
-      element.getAttribute('value').then(value => value === sex)
-    ).first().click();
+  private continentOption(name: string): ElementFinder {
+    return element(by.id('continents')).element(by.cssContainingText('option', name));
   }
 
-  private async pickExperience(experience: number): Promise<void> {
-    await this.experienceRadioInputs.filter(element =>
-      element.getAttribute('value').then(value => value === `${experience}`)
-    ).first().click();
+  private seleniumCommandOption(name: string): ElementFinder {
+    return element(by.id('selenium_commands')).element(by.cssContainingText('option', name));
   }
 
-  private async checkProfessions(professions: string[]): Promise<void> {
-    await this.professionCheckboxInputs.filter(element =>
-      element.getAttribute('value').then(value => professions.some(e => e === value))
-    ).click();
+  public async getPageTitle(): Promise<string> {
+    return await this.pageTitleLabel.getText();
   }
 
-  private async checkTools(tools: string[]): Promise<void> {
-    await this.toolsCheckboxInputs.filter(element =>
-      element.getAttribute('value').then(value => tools.some(tool => tool === value))
-    ).click();
+  public async getFilename(): Promise<string> {
+    const fullPath: string = await this.uploadFileInput.getAttribute('value');
+    return fullPath.split(/(\\|\/)/g).pop();
   }
 
-  private async pickContinent(continent: string): Promise<void> {
-    await this.continentDropdownInput.all(by.tagName('option')).filter(element =>
-      element.getText().then(text => text === continent)
-    ).first().click();
+  private async uploadFile(relativePath: string): Promise<void> {
+    const fullPath = resolve(process.cwd(), relativePath);
+
+    if (existsSync(fullPath)) {
+      await browser.setFileDetector(new remote.FileDetector());
+      await this.uploadFileInput.sendKeys(fullPath);
+      await browser.setFileDetector(undefined);
+    }
   }
 
-  private async pickCommands(commands: string[]): Promise<void> {
-    await this.commandsListInput.all(by.tagName('option')).filter(element =>
-      element.getText().then(text => commands.some(command => text === command))
-    ).click();
+  public async fillForm(form: PersonalInformation): Promise<void> {
+    await this.firstNameField.sendKeys(form.firstName);
+    await this.lastNameField.sendKeys(form.lastName);
+    await this.sexOption(form.sex).click();
+    await this.experienceOption(form.experience).click();
+
+    for (const name of form.profession) {
+      await this.professionOption(name).click();
+    }
+
+    if (form.file) {
+      await this.uploadFile(form.file);
+    }
+
+    for (const name of form.tools) {
+      await this.toolsOption(name).click();
+    }
+
+    await this.continentOption(form.continent).click();
+
+    for (const name of form.commands) {
+      await this.seleniumCommandOption(name).click();
+    }
   }
 
-  private async submitPersonalInformation(): Promise<void> {
-    await this.submitButton.click();
+  public async submit(form: PersonalInformation): Promise<void> {
+    await this.fillForm(form);
+    await this.sendButton.click();
   }
 }

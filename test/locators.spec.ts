@@ -1,35 +1,40 @@
+import { browser } from 'protractor';
 import { PersonalInformationPage } from '../src/page';
 
-describe('Given a personal information form', () => {
-  const personalInformationPage: PersonalInformationPage = new PersonalInformationPage();
-
+describe('Given a page to practice automation', () => {
   beforeAll(async () => {
-    await personalInformationPage.goToWebsite();
+    await browser.get('http://toolsqa.com/automation-practice-form/');
   });
 
-  describe('and that I fill out the form', () => {
+  describe('when I am training locators', () => {
+    const personalInformationPage = new PersonalInformationPage();
+
     beforeAll(async () => {
       await personalInformationPage.fillForm({
         firstName: 'Alejandro',
         lastName: 'Perdomo',
         sex: 'Male',
         experience: 7,
-        professions: ['Automation Tester'],
+        profession: ['Automation Tester'],
         tools: ['Selenium Webdriver'],
         continent: 'South America',
+        file: './resources/doge.jpg',
+        downloadFile: true,
         commands: [
           'Browser Commands',
           'Navigation Commands',
           'Switch Commands',
           'Wait Commands',
-          'WebElement Commands'
-        ]
+          'WebElement Commands']
       });
     });
 
-    it('then it should not have thrown an error', () => {
-      const didNotFail = true;
-      expect(didNotFail).toBe(true);
+    it('the form should be filled', async () => {
+      expect(await personalInformationPage.getPageTitle()).toBe('Practice Automation Form');
+    });
+
+    it('then filename should be loaded', async () => {
+      expect(await personalInformationPage.getFilename()).toBe('doge.jpg');
     });
   });
 });
