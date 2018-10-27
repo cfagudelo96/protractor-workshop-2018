@@ -18,4 +18,26 @@ describe('Given my outdated website with IFrames', () => {
       expect(await iFramePage.getIFrameHeight()).toBe(newIFrameHeight);
     });
   });
+
+  describe('When I want to verify my title in the default page', () => {
+    const defaultPageTitle = 'Sample Iframe page';
+
+    it('Should have the title of the default page', async () => {
+      expect(await iFramePage.getTitle()).toBe(defaultPageTitle);
+    });
+
+    describe('And when I switch to the IFrame inside my page', () => {
+      beforeAll(async () => await iFramePage.switchToIFrame());
+      it('Should get the title inside the IFrame', async () => {
+        expect(await iFramePage.getTitle()).toBe('Practice Automation Form');
+      });
+
+      describe('But when I switch back to the default page', () => {
+        beforeAll(async () => await iFramePage.switchToMainPage());
+        it('Should have the same title as before', async () => {
+          expect(await iFramePage.getTitle()).toBe(defaultPageTitle);
+        });
+      });
+    });
+  });
 });
