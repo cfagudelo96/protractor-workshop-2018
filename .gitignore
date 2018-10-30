@@ -3,6 +3,8 @@ awesome-report
 # Typescript
 dist
 
+temp
+
 # Created by https://www.gitignore.io/api/osx,node,visualstudiocode
 
 ### Node ###
