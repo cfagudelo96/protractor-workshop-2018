@@ -2,6 +2,7 @@ import { browser, element, by, ElementFinder } from 'protractor';
 import { resolve } from 'path';
 import { existsSync } from 'fs';
 import * as remote from 'selenium-webdriver/remote';
+import { DownloadService } from '../services';
 
 interface PersonalInformation {
   firstName: string;
@@ -22,6 +23,7 @@ export class PersonalInformationPage {
   private sendButton: ElementFinder;
   private pageTitleLabel: ElementFinder;
   private uploadFileInput: ElementFinder;
+  private fileDownloadLink: ElementFinder;
 
   constructor() {
     this.firstNameField = element(by.name('firstname'));
@@ -29,6 +31,7 @@ export class PersonalInformationPage {
     this.sendButton = element(by.id('submit'));
     this.pageTitleLabel = element(by.id('content')).element(by.tagName('h1'));
     this.uploadFileInput = element(by.id('photo'));
+    this.fileDownloadLink = element(by.linkText('Test File to Download'));
   }
 
   private sexOption(name: string): ElementFinder {
@@ -74,6 +77,12 @@ export class PersonalInformationPage {
     }
   }
 
+  private async download() {
+    const link = await this.fileDownloadLink.getAttribute('href');
+    const service = new DownloadService();
+    await service.downloadFile(link, 'test-document.xlsx');
+  }
+
   public async fillForm(form: PersonalInformation): Promise<void> {
     await this.firstNameField.sendKeys(form.firstName);
     await this.lastNameField.sendKeys(form.lastName);
@@ -96,6 +105,10 @@ export class PersonalInformationPage {
 
     for (const name of form.commands) {
       await this.seleniumCommandOption(name).click();
+    }
+
+    if (form.downloadFile) {
+      await this.download();
     }
   }
 

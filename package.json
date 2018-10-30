@@ -29,6 +29,7 @@
   },
   "homepage": "https://github.com/cfagudelo96/protractor-workshop-2018#readme",
   "dependencies": {
+    "isomorphic-fetch": "^2.2.1",
     "path": "^0.12.7",
     "protractor": "^5.4.1"
   },
